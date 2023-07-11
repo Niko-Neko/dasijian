@@ -1,13 +1,27 @@
 import requset from '@/utils/request'
 
-export const registerAPI = () =>{
+export const registerAPI = ({username,password,repassword}) =>{
+
     return requset({
-        url:'api/reg',
+        url:'/api/reg',
         method:'POST',
+        headers: {'Content-Type': 'application/json'},
         data:{
-            username:'lidong',
-            password:'111111',
-            repassword:'111111'
+            username,
+            password,
+            repassword
+        }
+    })
+}
+
+export const loginAPI =({username,password})=>{
+    return requset({
+        url:'/api/login',
+        method:'POST',
+        headers: {'Content-Type': 'application/json'},
+        data:{
+            username,
+            password
         }
     })
 }
