@@ -44,6 +44,7 @@
             background-color="#545c64"
             text-color="#fff"
             active-text-color="#ffd04b"
+            unique-opened
           >
           <el-menu-item index="/home">
             <i class="el-icon-s-home"></i>
