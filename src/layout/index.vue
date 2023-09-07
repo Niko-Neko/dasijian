@@ -37,7 +37,7 @@
             <span>欢迎{{ nickname || username }}</span>
           </div>
           <el-menu
-            default-active="/home"
+            :default-active="$route.path"
             class="el-menu-vertical-demo"
             @open="handleOpen"
             @close="handleClose"
@@ -45,44 +45,29 @@
             text-color="#fff"
             active-text-color="#ffd04b"
             unique-opened
+            router
           >
-          <el-menu-item index="/home">
-            <i class="el-icon-s-home"></i>
-            <span>首页</span>
+          <template v-for="item in menus">
+          <el-menu-item v-if="!item.children" :index="item.indexPath" :key="item.indexPath">
+            <i :class="item.icon"></i>
+            <span>{{ item.title }}</span>
           </el-menu-item>
-            <el-submenu index="/topic">
+
+            <el-submenu v-else :index="item.indexPath" :key="item.indexPath">
               <template slot="title">
-                <i class="el-icon-s-order"></i>
-                <span>文章管理</span>
+                <i :class="item.icon"></i>
+               <span>{{ item.title }}</span>
               </template>
-              <el-menu-item index="/topic1">
-              <i class="el-icon-s-data"></i>
-              <span slot="title">文章1</span>
-            </el-menu-item>
-            <el-menu-item index="/topic2">
-              <i class="el-icon-s-order"></i>
-              <span slot="title">文章2</span>
+              <el-menu-item v-for="res,index in item.children" :index="res.indexPath" :key="index">
+              <i :class="res.icon"></i>
+              <span>{{ res.title }}</span>
             </el-menu-item>
             </el-submenu>
-            <el-submenu index="/my">
-              <template slot="title">
-                <i class="el-icon-s-order"></i>
-                <span>个人中心</span>
-              </template>
-              <el-menu-item index="/my1">
-              <i class="el-icon-s-data"></i>
-              <span slot="title">中心1</span>
-            </el-menu-item>
-            <el-menu-item index="/my2">
-              <i class="el-icon-s-order"></i>
-              <span slot="title">中心2</span>
-            </el-menu-item>
-            </el-submenu>
-      
+          </template>
           </el-menu>
         </el-aside>
         <el-container>
-          <el-main>Main</el-main>
+          <el-main> <router-view/> </el-main>
           <el-footer>Footer</el-footer>
         </el-container>
       </el-container>
@@ -91,12 +76,16 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
+import {getMenusAPI} from "@/api";
+
 export default {
   components: {},
   name: "",
   props: [],
   data() {
-    return {};
+    return {
+      menus:[]
+    };
   },
   methods: {
     quitFn() {
@@ -127,13 +116,20 @@ export default {
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+//侧边栏数据
+      async getMenuListFn(){
+        const {data:{data:res}} = await getMenusAPI()
+        this.menus=res;
       }
   },
   computed: {
     ...mapGetters(["username", "nickname", "user_pic"]),
   },
   watch: {},
-  created() {},
+  created() {
+    this.getMenuListFn();
+  },
   mounted() {},
 };
 </script>
@@ -143,6 +139,7 @@ export default {
   border-bottom: 0;
 }
 .left-right {
+  height: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -200,5 +197,7 @@ export default {
 
 .el-aside {
   height: 895px;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 </style>
